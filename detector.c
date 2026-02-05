@@ -5,7 +5,7 @@
 #include <linux/mm.h>
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Cortana/Brainfeed-1996");
+MODULE_AUTHOR("Sentinel/Brainfeed-1996");
 MODULE_DESCRIPTION("Advanced Rootkit Detector via Syscall Integrity");
 
 unsigned long *sys_call_table;
