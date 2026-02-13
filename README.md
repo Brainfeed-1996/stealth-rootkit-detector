@@ -2,27 +2,69 @@
 
 Advanced Linux Kernel Module (LKM) for identifying malicious hooks in the system call table.
 
-## 🏗️ Architecture
-```mermaid
-graph TD
-    A[Kernel Space] --> B[Kallsyms Lookup]
-    B --> C[sys_call_table Address]
-    C --> D[Integrity Scanner]
-    D --> E{Address Check}
-    E -- Outside Text Segment --> F[ALARM: Hook Detected]
-    E -- Inside Text Segment --> G[Status: Clean]
+## Features
+
+- **Kernel Memory Forensics**: Detect syscall table modifications
+- **Integrity Checking**: Verify syscall addresses against kernel text segment
+- **Hook Detection**: Identify common rootkit techniques
+- **Logging**: Kernel log output via dmesg
+
+## Architecture
+
+```
+stealth-rootkit-detector/
+├── detector.c       # Kernel module implementation
+├── Makefile         # Build configuration
+├── src/             # Additional source files
+├── README.md        # This file
+└── .github/
+    └── workflows/
+        └── ci.yml   # CI/CD pipeline
 ```
 
-## 🔬 Detection Theory
-This detector operates on the principle of **Memory Forensics**. In a clean Linux environment, the addresses stored in the `sys_call_table` point to the kernel's text segment. Rootkits typically hijack these by:
-1. Modifying the table to point to their own malicious code.
-2. Splicing/Proxying the original function.
+## Usage
 
-Our tool performs a boundary check against `_text` and `_etext` symbols to identify jumps into non-standard memory regions.
+### Build
 
-## 🚀 Usage
 ```bash
 make
+```
+
+### Load Module
+
+```bash
 sudo insmod detector.ko
+```
+
+### Check Results
+
+```bash
 dmesg | tail
 ```
+
+### Unload
+
+```bash
+sudo rmmod detector
+```
+
+## Detection Method
+
+The detector performs memory forensics by:
+1. Locating the `sys_call_table` via kallsyms
+2. Checking each syscall address against kernel text segment boundaries
+3. Flagging addresses outside `_text` and `_etext` as potential hooks
+
+## Requirements
+
+- Linux kernel headers
+- GCC with kernel module support
+- sudo/root for loading modules
+
+## Disclaimer
+
+**Educational Use Only**: This tool is for security learning and authorized testing only.
+
+## License
+
+MIT
